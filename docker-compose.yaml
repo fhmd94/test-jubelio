@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgresql:
+    image: postgres
+    ports:
+      - '5411:5432'
+    environment:
+      - POSTGRES_PASSWORD=Password
+
+
+# docker run --name postgres-db -e POSTGRES_PASSWORD=docker -p  -d postgres
