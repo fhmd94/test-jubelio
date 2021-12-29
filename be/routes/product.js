@@ -17,16 +17,21 @@ module.exports = ({ server, pqsql }) => {
             validate: {
                 query: Joi.object({
                     page: Joi.number().integer().min(1).max(100).default(1)
-                })
-            }
+                }),
+            },
         },
         handler: async (request, h) => {
             try {
+                if (request.headers['x-key'] !== config.api_key) {
+                    return Boom.forbidden("Sorry, you are restricted in accesssing this API ");
+                }
+
+
                 const { page } = request.query
                 let limit = 12;
                 let offset = !page ? 0 : ((page - 1) * limit );
 
-                const { rows } = await pqsql.query('SELECT id, sku, name, description, price, prdImage01, prdImage02, prdImage03, prdImage04 FROM products ORDER BY id ASC  LIMIT $1 OFFSET $2', [limit, offset])
+                const { rows } = await pqsql.query('SELECT id, sku, name, description, price, prdImage01, prdImage02, prdImage03, prdImage04 FROM products ORDER BY update_at DESC  LIMIT $1 OFFSET $2', [limit, offset])
                 const data = handleImage(rows);
                 const result = await pqsql.query('SELECT COUNT(id) FROM products')
 
@@ -47,6 +52,10 @@ module.exports = ({ server, pqsql }) => {
         method: 'GET',
         path: '/api/product/{id}',
         handler: async (request, h) => {
+            if (request.headers['x-key'] !== config.api_key) {
+                return Boom.forbidden("Sorry, you are restricted in accesssing this API ");
+            }
+
             const { rows } = await pqsql.query('SELECT * FROM products WHERE id=$1', [request.params.id])
 
             if (rows.length === 0) {
@@ -101,6 +110,10 @@ module.exports = ({ server, pqsql }) => {
         },
         handler: async (request, h) => {
             try {
+                if (request.headers['x-key'] !== config.api_key) {
+                    return Boom.forbidden("Sorry, you are restricted in accesssing this API ");
+                }
+
                 const payload = request.payload;
 
                 const check = await pqsql.query('SELECT id, sku FROM products WHERE sku=$1', [payload.sku]);
@@ -126,7 +139,7 @@ module.exports = ({ server, pqsql }) => {
                     image4 = filename;
                 }
 
-                await pqsql.query('INSERT INTO products(sku, name, description, price, prdimage01, prdimage02, prdimage03, prdimage04) VALUES($1, $2, $3, $4, $5, $6, $7, $8);', 
+                await pqsql.query('INSERT INTO products(sku, name, description, price, prdimage01, prdimage02, prdimage03, prdimage04, create_at, update_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW());', 
                     [
                         payload.sku,
                         payload.name,
@@ -189,6 +202,10 @@ module.exports = ({ server, pqsql }) => {
         },
         handler: async (request, h) => {
             try {
+                if (request.headers['x-key'] !== config.api_key) {
+                    return Boom.forbidden("Sorry, you are restricted in accesssing this API ");
+                }
+
                 const { rows } = await pqsql.query('SELECT id, sku, prdimage01, prdimage02, prdimage03, prdimage04 FROM products WHERE id=$1', [request.params.id])
                 if (rows.length === 0) {
                     return Boom.badRequest("Data not Found", { statusCode: 400 })
@@ -220,7 +237,7 @@ module.exports = ({ server, pqsql }) => {
                     prdimage04 = filename;
                 }
 
-                await pqsql.query('UPDATE products SET sku=$2, name=$3, description=$4, price=$5, prdimage01=$6, prdimage02=$7, prdimage03=$8, prdimage04=$9  WHERE id=$1', [
+                await pqsql.query('UPDATE products SET sku=$2, name=$3, description=$4, price=$5, prdimage01=$6, prdimage02=$7, prdimage03=$8, prdimage04=$9, update_at=NOW()  WHERE id=$1', [
                     request.params.id,
                     payload.sku,
                     payload.name,
@@ -248,6 +265,10 @@ module.exports = ({ server, pqsql }) => {
         path: '/api/product/{id}',
         handler: async (request, h) => {
             try {
+                if (request.headers['x-key'] !== config.api_key) {
+                    return Boom.forbidden("Sorry, you are restricted in accesssing this API ");
+                }
+
                 const { rows } = await pqsql.query('SELECT sku FROM products WHERE id=$1', [request.params.id])
                 if (rows.length === 0) {
                     return Boom.badRequest("Data not Found", { statusCode: 400 })

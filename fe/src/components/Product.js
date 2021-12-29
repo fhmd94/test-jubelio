@@ -28,6 +28,10 @@ function Product(props) {
         });
     }
 
+    const handleBtnEdit = () => {
+        productStore.showModal();
+    }
+
     return (
         <Card
             loading={productStore.isLoading}
@@ -59,7 +63,8 @@ function Product(props) {
                 </>
             }
             actions={[
-                <Link to={`/product/${id}`}><EditOutlined key="edit" />,</Link>,
+                <Link to={`/product/${id}`}><EditOutlined key="edit" /></Link>,
+                <EditOutlined key="edit" onClick={() => productStore.showModal(id)} />,
                 <DeleteFilled onClick={handleBtnDelete} key="delete" />
             ]}
           >

@@ -1,14 +1,17 @@
 
 import { Layout, Menu } from 'antd';
 import { Outlet, useNavigate } from "react-router-dom";
+import { inject, observer } from 'mobx-react';
 
-function AppLayout() {
+function AppLayout(props) {
   const navigate = useNavigate();
 
   return (
     <Layout>
       <Layout.Header style={{ background: '#fff' }}>
-        <Menu mode='horizontal' onClick={() => {navigate('/product')}}>
+        <Menu mode='horizontal' onClick={() => {
+          props.productStore.showModal()
+        }}>
           <Menu.Item key="product"> Create Product</Menu.Item>
         </Menu>
       </Layout.Header>
@@ -19,4 +22,6 @@ function AppLayout() {
   );
 }
 
-export default AppLayout;
+// export default AppLayout;
+
+export default inject('productStore')(observer(AppLayout));

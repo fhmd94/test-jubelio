@@ -2,7 +2,7 @@ import { Form, Input, Button } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProduct, updateProduct } from '../services/product';
+import { getProduct, updateProduct, storeProduct } from '../services/product';
 
 function Show({ productStore }) {
   const [formProduct] = Form.useForm();
@@ -37,8 +37,11 @@ function Show({ productStore }) {
       .then(({data}) => {
         return navigate('/');
       }) 
-    } else {
-      console.log('create')
+    } else {  
+      storeProduct(value)
+      .then(({data}) => {
+        return navigate('/');
+      }) 
     }
   }
   const onFinishFailed = (e) => {

@@ -4,18 +4,20 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { Row, Col, Button } from 'antd';
 import Product from '../components/Product';
 import React from "react";
+import ModalProduct from "../components/ModalProduct";
 
 class List extends React.Component {
+  constructor() {
+    super();
+    this.fetchMoreData = this.fetchMoreData.bind(this);
+  }
 
   componentDidMount() {
     this.fetchMoreData();
   }
 
-  fetchMoreData(page) {
+  fetchMoreData() {
     const { productStore } = this.props;
-    // if (page) {
-    //   productStore.nextPage();
-    // }
 
     if (productStore.hasMore) {
       setTimeout(() => {
@@ -28,8 +30,8 @@ class List extends React.Component {
     const { productStore } = this.props;
     return (
       <>
-        {/* <InfiniteScroll 
-          next={fetchMoreData()}
+        <InfiniteScroll 
+          next={this.fetchMoreData}
           dataLength={productStore.products.length}
           hasMore={productStore.hasMore}
           endMessage={
@@ -38,9 +40,22 @@ class List extends React.Component {
             </p>
           }
           >
-        </InfiniteScroll> */}
+          <Row gutter={[16, 16]}>
+            {
+              productStore.products.map((item, key) => {
+                  return (
+                    <Col key={key} span={6}>
+                      <Product product={item[1]} />
+                    </Col>
+                  )
+                })
+            }
+          </Row>
+        </InfiniteScroll>
+
+        <ModalProduct visibleModal={productStore.visibleModal} form={productStore.form} productStore={productStore}/>
   
-        <Row gutter={[16, 16]}>
+        {/* <Row gutter={[16, 16]}>
             {
               productStore.products.map((item, key) => {
                   return (
@@ -58,7 +73,7 @@ class List extends React.Component {
               ) : ''
             }
             
-        </Row>
+        </Row> */}
       </>
     )
   }

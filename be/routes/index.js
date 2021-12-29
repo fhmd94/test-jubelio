@@ -14,5 +14,12 @@ module.exports = ({ server, pqsql }) => {
         }
     });
 
+    // glob.sync('api/**/routes/*.js', {
+    //     root: __dirname
+    //   }).forEach(file => {
+    //     const route = require(path.join(__dirname, file));
+    //     server.route(route);
+    //   });
+
     return server;
 }
